@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本経済新聞を読む会 | 公式サイト</title>
+    
+    <!-- Google Fonts: Noto Sans JP (本文用) & Noto Serif JP (見出し用・新聞風) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind設定 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nikkei: {
+                            main: '#004F8A', // 日経風ネイビー
+                            dark: '#003366',
+                            light: '#E6EEF5',
+                            accent: '#C41230', // 日経ロゴの赤
+                            bg: '#F8FAFC',     // 薄い青みがかったグレー背景
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                        serif: ['"Noto Serif JP"', 'serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* カスタムスタイル */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333;
+            line-height: 1.8;
+            background-color: #F8FAFC;
+        }
+        
+        /* 見出し等は明朝体で新聞らしさを演出 */
+        h1, h2, h3, .serif-font {
+            font-family: 'Noto Serif JP', serif;
+        }
+        
+        /* スクロールアニメーション用クラス */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 記事カードのホバーエフェクト強化 */
+        .article-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* プレースホルダー（文章を入れる場所）のスタイル */
+        .content-placeholder {
+            background-color: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            padding: 1rem;
+            color: #64748b;
+            text-align: center;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* 詳細タグ（summary）のマーカー非表示 */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- ヘッダー -->
+    <header class="fixed w-full z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100 transition-all duration-300" id="header">
+        <div class="container mx-auto px-6 h-16 md:h-20 flex justify-between items-center">
+            <!-- サークルロゴ -->
+            <a href="#" class="text-xl md:text-2xl font-bold text-nikkei-main tracking-tight serif-font flex items-center gap-3 hover:opacity-80 transition">
+                <div class="bg-nikkei-main text-white p-1.5 rounded">
+                    <i data-lucide="newspaper" class="w-5 h-5 md:w-6 md:h-6"></i>
+                </div>
+                <span>日本経済新聞を読む会</span>
+            </a>
+            
+            <!-- デスクトップナビゲーション -->
+            <nav class="hidden md:flex space-x-8 font-medium text-gray-600 text-sm tracking-wide">
+                <a href="#about" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">About</a>
+                <a href="#activity" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Activity</a>
+                <a href="#records" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Records</a>
+                <a href="#contact" class="bg-nikkei-main text-white px-4 py-2 rounded-md hover:bg-nikkei-dark transition duration-300 shadow-sm">Join Us</a>
+            </nav>
+
+            <!-- モバイルメニューボタン -->
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-nikkei-main focus:outline-none p-2 rounded-md hover:bg-gray-100 transition">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- モバイルメニュー（非表示） -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full top-full left-0 shadow-xl overflow-hidden transition-all duration-300">
+            <nav class="flex flex-col p-4 space-y-2 text-gray-700 font-medium">
+                <a href="#about" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
+                    <i data-lucide="info" class="w-5 h-5"></i> About
+                </a>
+                <a href="#activity" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
+                    <i data-lucide="activity" class="w-5 h-5"></i> Activity
+                </a>
+                <a href="#records" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
+                    <i data-lucide="file-text" class="w-5 h-5"></i> Records
+                </a>
+                <a href="#contact" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3 text-nikkei-accent">
+                    <i data-lucide="mail" class="w-5 h-5"></i> Contact / Recruit
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- ① メインビジュアル（ヒーローエリア） -->
+        <section class="relative pt-32 pb-20 md:pt-48 md:pb-32 flex items-center justify-center overflow-hidden bg-white">
+            <!-- 背景装飾（新聞記事をイメージしたグリッド） -->
+            <div class="absolute inset-0 w-full h-full opacity-[0.03] pointer-events-none bg-[radial-gradient(#004F8A_1px,transparent_1px)] [background-size:20px_20px]"></div>
+            
+            <!-- 装飾的な円 -->
+            <div class="absolute top-1/4 right-[10%] w-64 h-64 bg-nikkei-light rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float"></div>
+            <div class="absolute bottom-1/4 left-[10%] w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" style="animation-delay: 2s;"></div>
+
+            <div class="container mx-auto px-6 relative z-10 text-center max-w-4xl">
+                <span class="inline-flex items-center gap-2 py-1 px-4 mb-8 text-xs font-bold tracking-widest text-nikkei-main bg-nikkei-light rounded-full border border-blue-100 fade-in-up shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-nikkei-accent animate-pulse"></span> EST. 2024
+                </span>
+                
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight fade-in-up" style="transition-delay: 0.1s;">
+                    <!-- 修正: 改行タグを削除して一行に -->
+                    世界を読み解く、最初の一歩。<br>
+                    <span class="text-nikkei-main text-2xl md:text-3xl lg:text-4xl mt-6 block font-medium">新聞から、自分の知識と意見をつくる。</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed fade-in-up" style="transition-delay: 0.2s;">
+                    私たちは日本経済新聞を通じて社会の動きを知り、<br class="hidden md:inline">
+                    学生同士で議論することで「多角的な視点」と「自己の意見」を<br class="hidden md:inline">醸成するサークルです。
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-4 fade-in-up" style="transition-delay: 0.3s;">
+                    <a href="#contact" class="group bg-nikkei-main text-white px-8 py-4 rounded-lg font-bold hover:bg-nikkei-dark transition duration-300 shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+                        見学・入会はこちら 
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="#about" class="bg-white text-gray-700 border border-gray-300 px-8 py-4 rounded-lg font-bold hover:bg-gray-50 transition duration-300 shadow-sm flex items-center justify-center gap-2">
+                        サークルについて知る
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- News / Updates -->
+        <div class="bg-nikkei-main text-white py-3 border-t border-nikkei-dark">
+            <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-2 md:gap-4 justify-center">
+                <span class="bg-white/20 px-2 py-0.5 rounded text-xs font-bold tracking-wider shrink-0">NEWS</span>
+                <p class="text-sm font-medium text-center md:text-left">
+                    <span class="opacity-80 mr-1">2024.11.20 |</span>
+                    次回の活動は１号館 ３階 LC3にて16:10より行います
+                </p>
+            </div>
+        </div>
+
+        <!-- ② サークル紹介 (About) -->
+        <section id="about" class="py-24 bg-white relative">
+            <div class="container mx-auto px-6">
+                <!-- セクションヘッダー -->
+                <div class="text-center mb-20 fade-in-up">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 serif-font relative inline-block">
+                        私たちについて
+                        <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-nikkei-accent"></span>
+                    </h2>
+                    <p class="mt-6 text-gray-600">日本経済新聞を読む会のアイデンティティ</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-16 items-start">
+                    <!-- 設立趣旨・目的 -->
+                    <div class="bg-white p-8 lg:p-10 border border-gray-200 shadow-lg shadow-gray-100 rounded-2xl fade-in-up relative overflow-hidden group hover:border-nikkei-main/50 transition-colors duration-300">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-nikkei-main"></div>
+                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-nikkei-light rounded-full mix-blend-multiply opacity-50 group-hover:scale-110 transition-transform duration-700"></div>
+                        
+                        <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3 relative z-10">
+                            <span class="bg-nikkei-light p-2 rounded-lg text-nikkei-main">
+                                <i data-lucide="target" class="w-6 h-6"></i>
+                            </span>
+                            なぜ読むのか、なぜ話すのか
+                        </h3>
+                        
+                        <div class="space-y-8 relative z-10">
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-nikkei-main rounded-full"></span>
+                                    情報のインプット
+                                </h4>
+                                <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
+                                    <p class="text-xs font-bold text-nikkei-main mb-2 tracking-wider">体系知としての知識の土台</p>
+                                    <p class="text-sm leading-relaxed text-gray-700">
+                                        この世界は分野横断的なものです。そのため、１つの専門知識という土台の他に、広く多角的な知識を土台として、種々の思考をすることが肝要であると考えています。
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800 mb-3 flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-nikkei-main rounded-full"></span>
+                                    自己意見とアウトプット
+                                </h4>
+                                <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
+                                    <p class="text-xs font-bold text-nikkei-main mb-2 tracking-wider">思考の深化と知識の昇華</p>
+                                    <p class="text-sm leading-relaxed text-gray-700">
+                                        得た知識について、思考し、見解を持つことで、自分の知識と思考を深化する。さらに、それを表現し、他者視点を用いることで、「知識」「思考」を昇華させることも重要であると考えます。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 雰囲気・メンバー -->
+                    <div class="space-y-8 fade-in-up" style="transition-delay: 0.2s;">
+                        <!-- 雰囲気 -->
+                        <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                                <i data-lucide="coffee" class="text-nikkei-main w-6 h-6"></i> サークルの雰囲気
+                            </h3>
+                            <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded">Casual</span>
+                                    <p class="text-sm font-bold text-gray-800">あくまでもサークル</p>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">
+                                    活動内容は少し堅めですが、ガチガチの勉強会ではなく、気になる話題を話し合う場所というイメージです。
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- メンバー構成 -->
+                        <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                                <i data-lucide="users" class="text-nikkei-main w-6 h-6"></i> メンバー構成
+                            </h3>
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-sm space-y-4">
+                                <div class="flex items-start gap-4">
+                                    <span class="font-bold text-nikkei-main whitespace-nowrap min-w-[3rem]">4年生</span>
+                                    <p class="text-gray-700">和田 尚樹</p>
+                                </div>
+                                <div class="w-full h-px bg-gray-100"></div>
+                                <div class="flex items-start gap-4">
+                                    <span class="font-bold text-nikkei-main whitespace-nowrap min-w-[3rem]">3年生</span>
+                                    <p class="text-gray-700 leading-relaxed">
+                                        那須 陽向(代表)、伊知地 秋士(副代表)、<br>坂井 勇魚(会計)、井良沢 陸人、霜鳥 元
+                                    </p>
+                                </div>
+                                <div class="w-full h-px bg-gray-100"></div>
+                                <div class="flex items-start gap-4">
+                                    <span class="font-bold text-nikkei-main whitespace-nowrap min-w-[3rem]">1年生</span>
+                                    <p class="text-gray-700">佐野 陸、上村 歩夢</p>
+                                </div>
+                                <div class="mt-2 pt-4 border-t border-dashed border-gray-300">
+                                    <div class="flex items-center gap-2 text-gray-500">
+                                        <i data-lucide="award" class="w-4 h-4"></i>
+                                        <span class="font-bold text-xs">顧問: 丸山 一郎 教授</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ③ 活動内容 (Activity) -->
+        <section id="activity" class="py-24 bg-nikkei-bg border-y border-gray-200">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-20 fade-in-up">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 serif-font relative inline-block">
+                        活動フロー
+                        <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-nikkei-accent"></span>
+                    </h2>
+                    <p class="mt-6 text-gray-600">普段の活動は、シンプルな3ステップで行われます。</p>
+                </div>
+
+                <!-- ステップ表示 -->
+                <div class="grid md:grid-cols-3 gap-8 relative mb-20">
+                    <!-- 矢印 (デスクトップのみ) -->
+                    <div class="hidden md:block absolute top-1/2 left-1/3 transform -translate-y-1/2 -translate-x-1/2 text-gray-300 z-0">
+                        <i data-lucide="chevron-right" class="w-12 h-12 opacity-50"></i>
+                    </div>
+                    <div class="hidden md:block absolute top-1/2 right-1/3 transform -translate-y-1/2 translate-x-1/2 text-gray-300 z-0">
+                        <i data-lucide="chevron-right" class="w-12 h-12 opacity-50"></i>
+                    </div>
+
+                    <!-- STEP 1 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg relative z-10 fade-in-up text-center border-t-4 border-nikkei-main group hover:-translate-y-2 transition-transform duration-300">
+                        <div class="w-14 h-14 bg-nikkei-main text-white rounded-2xl rotate-3 flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-lg shadow-blue-900/20 group-hover:rotate-6 transition-transform">1</div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Pick Up</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            日本経済新聞等を読み、<br>自分の気になった記事を選びます。<br>
+                            <span class="text-xs text-gray-400 mt-2 block">（政治、経済、IT、生活...ジャンルは問いません）</span>
+                        </p>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg relative z-10 fade-in-up text-center border-t-4 border-nikkei-main group hover:-translate-y-2 transition-transform duration-300" style="transition-delay: 0.1s;">
+                        <div class="w-14 h-14 bg-nikkei-main text-white rounded-2xl -rotate-2 flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-lg shadow-blue-900/20 group-hover:-rotate-6 transition-transform">2</div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Think</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            記事の内容、自分はどう考えたか、<br>これを所定のレジュメにまとめます。<br>
+                            <span class="text-xs text-gray-400 mt-2 block">(テンプレートは入会後に共有します)</span>
+                        </p>
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg relative z-10 fade-in-up text-center border-t-4 border-nikkei-main group hover:-translate-y-2 transition-transform duration-300" style="transition-delay: 0.2s;">
+                        <div class="w-14 h-14 bg-nikkei-main text-white rounded-2xl rotate-2 flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-lg shadow-blue-900/20 group-hover:rotate-6 transition-transform">3</div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Share & Discuss</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            サークル内で内容を共有。<br>
+                            全員で深堀りや横展開し、<br>多様な意見・視点を交換します。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- その他の活動 & ツール (2カラムレイアウト) -->
+                <div class="grid lg:grid-cols-3 gap-8 fade-in-up">
+                    <!-- その他の活動 -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="text-nikkei-main"></i> その他の活動
+                        </h3>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <!-- 活動1 -->
+                            <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-nikkei-main/30 transition-colors">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="bg-white p-1.5 rounded text-nikkei-main shadow-sm">
+                                        <i data-lucide="building-2" class="w-4 h-4"></i>
+                                    </div>
+                                    <h4 class="text-gray-800 font-bold text-sm">企業見学・FW</h4>
+                                </div>
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    主に新潟県の企業（コメリ、原信、亀田製菓、岩塚製菓等）を中心に、現場を知るための見学を計画しています。
+                                </p>
+                            </div>
+
+                            <!-- 活動2 -->
+                            <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-nikkei-main/30 transition-colors">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="bg-white p-1.5 rounded text-nikkei-main shadow-sm">
+                                        <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                                    </div>
+                                    <h4 class="text-gray-800 font-bold text-sm">出張講義</h4>
+                                </div>
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    日本証券業協会様の講師の方を招聘し、専門的な知見を深める出張講義の開催を準備しています。
+                                </p>
+                            </div>
+
+                            <!-- 活動3 -->
+                            <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-nikkei-main/30 transition-colors md:col-span-2">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="bg-white p-1.5 rounded text-nikkei-main shadow-sm">
+                                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                                    </div>
+                                    <h4 class="text-gray-800 font-bold text-sm">活動報告書の発行</h4>
+                                </div>
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    半年に一度、メンバーのレジュメをまとめた報告書を作成・発行。初号は大学図書館にて保管いただいています。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ツール・環境 -->
+                    <div class="bg-nikkei-main text-white rounded-2xl p-8 shadow-lg flex flex-col justify-center">
+                        <h3 class="text-lg font-bold mb-6 border-b border-white/20 pb-4">Tools & Environment</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="bg-white/10 p-2 rounded">
+                                    <i data-lucide="map-pin" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <span class="font-bold block text-sm mb-1">開催形式</span>
+                                    <p class="text-xs text-gray-200 leading-relaxed">主に対面（１号館）が基本。<br>Zoom等のオンラインも検討中。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="bg-white/10 p-2 rounded">
+                                    <i data-lucide="message-square" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <div>
+                                    <span class="font-bold block text-sm mb-1">連絡ツール</span>
+                                    <p class="text-xs text-gray-200 leading-relaxed">連絡：LINE / Gmail<br>資料：Google Drive</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ④ 活動記録・記事紹介 (Records) -->
+        <section id="records" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 fade-in-up">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 serif-font relative inline-block">
+                            活動記録
+                            <span class="absolute -bottom-2 left-0 w-12 h-1 bg-nikkei-accent"></span>
+                        </h2>
+                        <p class="mt-6 text-gray-600">過去に取り上げた記事と、そこから生まれた議論の一部を紹介します。</p>
+                    </div>
+                    <a href="#" class="hidden md:flex items-center gap-1 text-nikkei-main font-bold hover:gap-2 transition-all mt-4 md:mt-0">
+                        すべて見る <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- 記事カードグリッド -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    
+                    <!-- 記事カード 1 -->
+                    <article class="article-card bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col fade-in-up group h-full">
+                        <div class="h-2 bg-nikkei-main w-full"></div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-[10px] font-bold text-nikkei-main bg-nikkei-light px-2 py-1 rounded-full uppercase tracking-wide">国際情勢</span>
+                                <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full uppercase tracking-wide">為替</span>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 group-hover:text-nikkei-main transition-colors serif-font leading-snug">
+                                日銀の金融政策決定会合と<br>円安の行方
+                            </h3>
+                            
+                            <div class="space-y-4 flex-grow">
+                                <div>
+                                    <h4 class="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                                        <i data-lucide="user" class="w-3 h-3"></i> 担当者の視点
+                                    </h4>
+                                    <div class="content-placeholder text-xs bg-blue-50/50 border-blue-100 text-gray-600">
+                                        輸出企業への恩恵はある一方、原材料高による家計への影響を懸念。中小企業への波及効果に注目した。
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                                        <i data-lucide="users" class="w-3 h-3"></i> 議論の論点
+                                    </h4>
+                                    <div class="content-placeholder text-xs bg-gray-50 border-gray-200">
+                                        価格転嫁がどこまで進むか？賃上げとの好循環は生まれるか？について意見が交わされた。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-xs text-gray-500 flex justify-between items-center">
+                            <span class="font-mono">2024.10.15</span>
+                            <span class="flex items-center gap-1"><i data-lucide="pen-tool" class="w-3 h-3"></i> 経済学部 2年</span>
+                        </div>
+                    </article>
+
+                    <!-- 記事カード 2 -->
+                    <article class="article-card bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col fade-in-up group h-full" style="transition-delay: 0.1s;">
+                        <div class="h-2 bg-nikkei-accent w-full"></div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-[10px] font-bold text-red-700 bg-red-50 px-2 py-1 rounded-full uppercase tracking-wide">IT / Tech</span>
+                                <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full uppercase tracking-wide">生成AI</span>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 group-hover:text-nikkei-accent transition-colors serif-font leading-snug">
+                                生成AIの法規制と<br>著作権問題について
+                            </h3>
+                            
+                            <div class="space-y-4 flex-grow">
+                                <div>
+                                    <h4 class="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                                        <i data-lucide="user" class="w-3 h-3"></i> 担当者の視点
+                                    </h4>
+                                    <div class="content-placeholder text-xs bg-blue-50/50 border-blue-100 text-gray-600">
+                                        技術発展を阻害しない範囲での規制が必要だが、クリエイターの権利保護とのバランスが難しい。
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                                        <i data-lucide="users" class="w-3 h-3"></i> 議論の論点
+                                    </h4>
+                                    <div class="content-placeholder text-xs bg-gray-50 border-gray-200">
+                                        欧州のAI規制法案との比較や、日本独自の「機械学習パラダイス」的法解釈の是非について。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-xs text-gray-500 flex justify-between items-center">
+                            <span class="font-mono">2024.10.08</span>
+                            <span class="flex items-center gap-1"><i data-lucide="pen-tool" class="w-3 h-3"></i> 法学部 3年</span>
+                        </div>
+                    </article>
+
+                    <!-- 記事カード 3 -->
+                    <article class="article-card bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col fade-in-up group h-full" style="transition-delay: 0.2s;">
+                        <div class="h-2 bg-green-600 w-full"></div>
+                        <div class="p-6 flex-grow flex flex-col">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-1 rounded-full uppercase tracking-wide">マーケティング</span>
+                                <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full uppercase tracking-wide">Z世代</span>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 group-hover:text-green-700 transition-colors serif-font leading-snug">
+                                「タイパ」消費と<br>新たな企業戦略
+                            </h3>
+                            
+                            <div class="space-y-4 flex-grow">
+                                <div>
+                                    <h4 class="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                                        <i data-lucide="user" class="w-3 h-3"></i> 担当者の視点
+                                    </h4>
+                                    <div class="content-placeholder text-xs bg-blue-50/50 border-blue-100 text-gray-600">
+                                        映画の倍速視聴など、コンテンツの「消費」化が加速。企業は「体験」の価値をどう伝えるかが鍵。
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                                        <i data-lucide="users" class="w-3 h-3"></i> 議論の論点
+                                    </h4>
+                                    <div class="content-placeholder text-xs bg-gray-50 border-gray-200">
+                                        タイパ重視は「損をしたくない」心理の表れか？可処分時間の奪い合いにおけるSNSの影響力。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-6 py-3 border-t border-gray-100 text-xs text-gray-500 flex justify-between items-center">
+                            <span class="font-mono">2024.10.01</span>
+                            <span class="flex items-center gap-1"><i data-lucide="pen-tool" class="w-3 h-3"></i> 商学部 1年</span>
+                        </div>
+                    </article>
+
+                </div>
+                
+                <div class="mt-12 text-center md:hidden">
+                    <a href="#" class="inline-block border border-nikkei-main text-nikkei-main px-8 py-3 rounded-lg font-bold hover:bg-nikkei-main hover:text-white transition duration-300">記事一覧を見る</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⑤ お問い合わせ (Contact & Recruit) -->
+        <section id="contact" class="py-24 bg-nikkei-dark text-white relative overflow-hidden">
+            <!-- 背景パターン -->
+            <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #202020 25%, #202020 75%, #000 75%, #000); background-position: 0 0, 10px 10px; background-size: 20px 20px;"></div>
+            
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-16 items-start">
+                    
+                    <!-- 左側：募集情報 -->
+                    <div class="fade-in-up">
+                        <div class="inline-block px-3 py-1 bg-nikkei-accent text-xs font-bold rounded mb-4">RECRUIT</div>
+                        <h2 class="text-3xl md:text-4xl font-bold mb-6 serif-font">Join Us</h2>
+                        <p class="mb-8 text-gray-300 leading-relaxed text-lg">
+                            知識の有無は問いません。<br>
+                            「社会を知りたい」「話したい」「考えることが好きだ」<br>
+                            という気持ちがあれば誰でも歓迎です。<br>
+                            まずは一度、見学に来てみませんか？
+                        </p>
+
+                        <div class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 mb-8 border border-white/10 hover:border-white/30 transition-colors">
+                            <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-white">
+                                <i data-lucide="clock" class="text-yellow-400"></i> 活動詳細
+                            </h3>
+                            <ul class="space-y-4">
+                                <li class="flex flex-col sm:flex-row sm:justify-between border-b border-white/10 pb-3 gap-1">
+                                    <span class="text-gray-400 text-sm">日時</span>
+                                    <span class="font-bold">隔週 月or火曜｜16:10～17:10</span>
+                                </li>
+                                <li class="flex flex-col sm:flex-row sm:justify-between border-b border-white/10 pb-3 gap-1">
+                                    <span class="text-gray-400 text-sm">場所</span>
+                                    <span class="font-bold">１号館 ３階 LC3</span>
+                                </li>
+                                <li class="flex flex-col sm:flex-row sm:justify-between border-b border-white/10 pb-3 gap-1">
+                                    <span class="text-gray-400 text-sm">対象</span>
+                                    <span class="font-bold">全学年・全学部</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <a href="#" class="group block w-full bg-nikkei-accent hover:bg-red-700 text-white text-center font-bold py-5 rounded-lg shadow-xl transition-all transform hover:-translate-y-1 relative overflow-hidden">
+                            <span class="relative z-10 flex items-center justify-center gap-2">
+                                参加申し込みフォームへ <i data-lucide="external-link" class="w-5 h-5"></i>
+                            </span>
+                            <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                        </a>
+                        <p class="text-xs text-center mt-3 text-gray-400 flex items-center justify-center gap-1">
+                            <i data-lucide="lock" class="w-3 h-3"></i> Googleフォームへ移動します
+                        </p>
+                    </div>
+
+                    <!-- 右側：FAQ -->
+                    <div class="fade-in-up" style="transition-delay: 0.2s;">
+                        <h2 class="text-2xl font-bold mb-8 serif-font flex items-center gap-3">
+                            <i data-lucide="help-circle" class="text-gray-400"></i> よくある質問 (FAQ)
+                        </h2>
+                        <div class="space-y-4">
+                            
+                            <details class="group bg-white/5 rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:bg-white/10 open:bg-white/10 open:border-white/30">
+                                <summary class="flex justify-between items-center font-bold cursor-pointer p-5 text-white">
+                                    <span>Q. 日経新聞を購読していないとダメですか？</span>
+                                    <span class="bg-white/20 rounded-full p-1 transition-transform group-open:rotate-180">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </span>
+                                </summary>
+                                <div class="px-5 pb-5 pt-0 text-sm leading-relaxed animate-fadeIn">
+                                    <div class="h-px w-full bg-white/10 mb-4"></div>
+                                    <span class="font-bold text-white block mb-2 text-base">【手ぶらでOKです】</span>
+                                    <p class="text-gray-300">必須ではありません。主に大学図書館のデータベースや、図書館にある新聞を使用して読んでいますので、個人の購読は不要です。</p>
+                                </div>
+                            </details>
+
+                            <details class="group bg-white/5 rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:bg-white/10 open:bg-white/10 open:border-white/30">
+                                <summary class="flex justify-between items-center font-bold cursor-pointer p-5 text-white">
+                                    <span>Q. 経済の知識がなくてもついていけますか？</span>
+                                    <span class="bg-white/20 rounded-full p-1 transition-transform group-open:rotate-180">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </span>
+                                </summary>
+                                <div class="px-5 pb-5 pt-0 text-sm leading-relaxed animate-fadeIn">
+                                    <div class="h-px w-full bg-white/10 mb-4"></div>
+                                    <span class="font-bold text-white block mb-2 text-base">【知識ゼロでも大歓迎です】</span>
+                                    <!-- 修正: 経済の知識に関する回答文を変更 -->
+                                    <p class="text-gray-300">1年生も多く、知らない用語の解説をしながら進めるので安心してください。僕もそんな知りません。</p>
+                                </div>
+                            </details>
+
+                            <details class="group bg-white/5 rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:bg-white/10 open:bg-white/10 open:border-white/30">
+                                <summary class="flex justify-between items-center font-bold cursor-pointer p-5 text-white">
+                                    <span>Q. 兼サー（他のサークルとの掛け持ち）は可能ですか？</span>
+                                    <span class="bg-white/20 rounded-full p-1 transition-transform group-open:rotate-180">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </span>
+                                </summary>
+                                <div class="px-5 pb-5 pt-0 text-sm leading-relaxed animate-fadeIn">
+                                    <div class="h-px w-full bg-white/10 mb-4"></div>
+                                    <span class="font-bold text-white block mb-2 text-base">【全く問題ありません】</span>
+                                    <!-- 修正: 兼サーに関する回答文を変更 -->
+                                    <p class="text-gray-300">可能です。活動は隔週１時間程度なので拘束も少なく、多くのメンバーが２つ以上のサークルに加入しています。</p>
+                                </div>
+                            </details>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ⑥ フッター -->
+    <footer class="bg-gray-950 text-gray-400 py-16 border-t border-gray-900">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-10">
+                
+                <div class="text-center md:text-left max-w-sm">
+                    <a href="#" class="text-xl font-bold text-white serif-font flex items-center justify-center md:justify-start gap-2 mb-4 hover:opacity-80 transition">
+                        <i data-lucide="newspaper" class="w-6 h-6"></i>
+                        日本経済新聞を読む会
+                    </a>
+                    <p class="text-sm mb-6">私たちは、新聞を通じて社会を知り、議論を通じて自己意見と思考力を深める、長岡大学の文科系サークルです。</p>
+                    <div class="flex justify-center md:justify-start gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-nikkei-main hover:text-white transition duration-300">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition duration-300">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex gap-12 text-sm">
+                    <div>
+                        <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-xs">Menu</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#" class="hover:text-nikkei-main transition">Home</a></li>
+                            <li><a href="#about" class="hover:text-nikkei-main transition">About</a></li>
+                            <li><a href="#activity" class="hover:text-nikkei-main transition">Activity</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-xs">More</h4>
+                        <ul class="space-y-3">
+                            <li><a href="#records" class="hover:text-nikkei-main transition">Records</a></li>
+                            <li><a href="#contact" class="hover:text-nikkei-main transition">Recruit</a></li>
+                            <li><a href="#" class="hover:text-nikkei-main transition">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-900 mt-12 pt-8 text-center text-xs text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p>&copy; 2024 Nikkei Reading Circle. All Rights Reserved.</p>
+                <p>Designed for University Circle Activity.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript: 動作ロジック -->
+    <script>
+        // Lucideアイコンの初期化
+        lucide.createIcons();
+
+        // モバイルメニューの制御
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const header = document.getElementById('header');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = mobileMenu.classList.contains('hidden') ? 'menu' : 'x';
+            // アイコンの切り替え（再描画が必要なためinnerHTMLで簡易実装）
+            mobileMenuBtn.innerHTML = `<i data-lucide="${icon}" class="w-6 h-6"></i>`;
+            lucide.createIcons();
+        });
+
+        // メニューリンクをクリックしたらメニューを閉じる
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenuBtn.innerHTML = `<i data-lucide="menu" class="w-6 h-6"></i>`;
+                lucide.createIcons();
+            });
+        });
+
+        // スクロール時のヘッダー制御（影をつけるなど）
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-md');
+                header.classList.remove('py-4'); // 必要に応じてパディング調整
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+
+        // Intersection Observer によるスクロールアニメーション
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -50px 0px', // 少し手前で発火
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // 一度表示されたら監視を終了
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+
+        // スムーススクロール (Safari等への互換性強化版)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const headerOffset = 80; // 固定ヘッダーの分だけずらす
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth"
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
