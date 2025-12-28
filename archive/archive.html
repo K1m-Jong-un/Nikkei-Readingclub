@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本経済新聞を読む会 | 資料アーカイブ</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Noto Serif JP for intellectual vibe -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Noto Serif JP"', 'serif'],
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    },
+                    colors: {
+                        theme: {
+                            main: '#003366',    /* Dark Navy (Specified) */
+                            accent: '#b91c1c',
+                            bg: '#f8f9fa',
+                            sub: '#F0F8FF',     /* Alice Blue */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333;
+        }
+        h1, h2, h3, .serif-font {
+            font-family: 'Noto Serif JP', serif;
+        }
+        
+        /* New Card Specification Styles */
+        .academic-card {
+            background-color: white;
+            border-top: 5px solid #003366; /* Important Requirement */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .academic-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #003366;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 flex-shrink-0 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo / Title Link -->
+            <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/" class="flex items-center gap-4 cursor-pointer group hover:opacity-90 transition-opacity">
+                <!-- Icon: Newspaper Design per Spec -->
+                <div class="w-12 h-12 bg-theme-main rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+                    <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                </div>
+                
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-xl font-bold tracking-wide leading-none text-theme-main group-hover:text-blue-800 transition-colors">日本経済新聞を読む会</h1>
+                    <span class="text-xs text-gray-500 mt-1 group-hover:text-gray-700">資料アーカイブ</span>
+                </div>
+            </a>
+
+            <!-- Right Side Navigation & Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Home Link -->
+                <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/" class="text-sm font-medium text-gray-500 hover:text-theme-main flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 transition-colors" title="サークルトップへ戻る">
+                    <i class="fa-solid fa-house"></i>
+                    <span class="hidden sm:inline">ホーム</span>
+                </a>
+
+                <!-- Viewer Controls -->
+                <div id="viewer-controls" class="hidden flex items-center gap-3 pl-2 border-l border-gray-200 ml-2">
+                    <button onclick="showGallery()" class="text-sm font-medium text-gray-600 hover:text-theme-main flex items-center gap-2 px-3 py-2 transition-colors">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>一覧へ戻る</span>
+                    </button>
+                    <div class="h-4 w-px bg-gray-300 mx-2 hidden sm:block"></div>
+                    <button onclick="document.getElementById('file-upload').click()" class="bg-theme-main hover:bg-blue-900 text-white text-sm px-4 py-2 rounded-sm transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-upload"></i>
+                        <span class="hidden sm:inline">ファイルを開く</span>
+                    </button>
+                    <input type="file" id="file-upload" accept="application/pdf" class="hidden">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 relative overflow-hidden flex flex-col">
+        
+        <!-- === VIEW 1: Gallery (New Card Layout) === -->
+        <div id="gallery-view" class="flex-1 overflow-y-auto bg-gray-50">
+            <div class="max-w-6xl mx-auto px-4 py-12">
+                <!-- Page Header -->
+                <div class="mb-10 text-center">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-3 font-serif">活動報告・記事アーカイブ</h2>
+                    <p class="text-gray-500 text-sm">
+                        部員による研究レポート、読書会のレジュメ、定期発行の部誌などを保管しています。<br>
+                        クリックで詳細な内容（PDF）を閲覧できます。
+                    </p>
+                </div>
+
+                <!-- Article Grid (Changed to Grid for new card design) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="card-container">
+                    <!-- Javascript will populate this -->
+                </div>
+            </div>
+        </div>
+
+        <!-- === VIEW 2: PDF Viewer === -->
+        <div id="pdf-view" class="hidden flex-1 relative flex flex-col bg-gray-100 h-full">
+            
+            <!-- Viewer Toolbar -->
+            <div id="toolbar" class="bg-white border-b border-gray-200 px-4 py-2 flex flex-wrap items-center justify-between shadow-sm z-20">
+                <div class="flex items-center gap-4">
+                    <h3 id="current-doc-title" class="text-sm font-bold text-gray-700 truncate max-w-[200px] hidden sm:block">
+                        ドキュメント
+                    </h3>
+                </div>
+
+                <div class="flex items-center gap-3 bg-gray-50 rounded px-2 py-1 border border-gray-200">
+                    <button id="prev" class="p-1.5 text-gray-600 hover:text-black hover:bg-gray-200 rounded transition disabled:opacity-30">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span class="text-sm font-medium text-gray-600">
+                        <input type="number" id="page-num" value="1" min="1" class="w-10 text-center bg-transparent border-b border-gray-400 focus:outline-none focus:border-theme-main">
+                        / <span id="page-count">--</span>
+                    </span>
+                    <button id="next" class="p-1.5 text-gray-600 hover:text-black hover:bg-gray-200 rounded transition disabled:opacity-30">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="zoom-out" class="p-2 text-gray-500 hover:text-gray-900 transition"><i class="fa-solid fa-minus"></i></button>
+                    <span id="zoom-level" class="text-xs font-medium w-10 text-center text-gray-500">100%</span>
+                    <button id="zoom-in" class="p-2 text-gray-500 hover:text-gray-900 transition"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- Upload Placeholder -->
+            <div id="upload-prompt" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gray-50 z-10">
+                <div class="max-w-md w-full border border-gray-300 bg-white p-10 shadow-sm text-center" id="drop-zone">
+                    <div class="mb-4 text-gray-300">
+                        <i class="fa-regular fa-file-pdf text-5xl"></i>
+                    </div>
+                    <h3 class="serif-font text-xl font-bold text-gray-800 mb-2" id="prompt-title">PDF閲覧モード</h3>
+                    <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+                        サーバー上のファイルへのアクセス権限がないため、<br>
+                        デモ用にローカルファイルを読み込みます。
+                    </p>
+                    <button onclick="document.getElementById('file-upload').click()" class="bg-theme-main text-white px-6 py-2 text-sm font-medium hover:bg-blue-900 transition w-full">
+                        ファイルを選択またはドロップ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div id="viewer-container" class="flex-1 overflow-auto flex justify-center p-4 md:p-8 bg-gray-200 relative z-0">
+                <canvas id="the-canvas" class="shadow-lg mx-auto bg-white hidden"></canvas>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-30">
+                <div class="loading-spinner mb-4"></div>
+                <p class="serif-font text-gray-600 text-sm tracking-widest">LOADING</p>
+            </div>
+
+            <!-- Error Notification -->
+            <div id="error-message" class="hidden absolute top-20 left-1/2 transform -translate-x-1/2 bg-red-50 border border-red-200 text-red-800 px-6 py-4 shadow-lg flex items-center gap-4 z-50 max-w-sm w-full">
+                <i class="fa-solid fa-circle-exclamation text-lg text-red-600"></i>
+                <div class="flex-1">
+                    <p class="font-bold text-sm">エラーが発生しました</p>
+                    <p id="error-text" class="text-xs mt-1 text-red-600 opacity-80">ファイルを読み込めませんでした。</p>
+                </div>
+                <button onclick="document.getElementById('error-message').classList.add('hidden')" class="text-red-400 hover:text-red-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- DATA: Sample Articles (Updated Structure) ---
+        // 修正: 各データに filename プロパティを追加しました。
+        // 後からこの "CHANGE_ME.pdf" の部分を実際のファイル名に書き換えてください。
+        const pdfData = [
+            {
+                id: 1,
+                title: "日銀の金融政策決定会合と円安の行方",
+                filename: "CHANGE_ME.pdf", // ←ここにPDFファイル名を入力
+                tags: ["国際情勢", "為替"],
+                date: "2024.10.15",
+                author_attr: "経済学部 2年",
+                perspective: "輸出企業への恩恵はある一方、原材料高による家計への影響を懸念。中小企業への波及効果に注目した。",
+                discussion: "価格転嫁がどこまで進むか？賃上げとの好循環は生まれるか？について意見が交わされた。"
+            },
+            {
+                id: 2,
+                title: "夏目漱石『こころ』における「私」の倫理",
+                filename: "CHANGE_ME.pdf", // ←ここにPDFファイル名を入力
+                tags: ["文学", "読書会"],
+                date: "2024.01.15",
+                author_attr: "文学部 3年",
+                perspective: "「先生」の遺書を読み解く「私」の心理変化に注目。明治の精神と現代の個人主義の対比を中心に分析。",
+                discussion: "Kの自殺は不可避だったのか？「先生」のエゴイズムは現代社会にどう通底するか？"
+            },
+            {
+                id: 3,
+                title: "2024年度 新入生歓迎活動の総括と課題",
+                filename: "CHANGE_ME.pdf", // ←ここにPDFファイル名を入力
+                tags: ["活動報告", "運営"],
+                date: "2024.05.20",
+                author_attr: "広報係・田中",
+                perspective: "SNS運用による集客効果が顕著だった一方、対面イベントでのクロージング率に課題が残る結果となった。",
+                discussion: "次年度に向けたターゲット層の明確化と、部室への誘導動線の見直しについて。"
+            },
+            {
+                id: 4,
+                title: "AI技術の発展と労働市場への影響",
+                filename: "CHANGE_ME.pdf", // ←ここにPDFファイル名を入力
+                tags: ["経済", "技術"],
+                date: "2024.08.10",
+                author_attr: "法学部 4年",
+                perspective: "単純労働の代替だけでなく、クリエイティブ職への浸透が進む現状を法的・倫理的観点から考察。",
+                discussion: "ベーシックインカム導入の是非と、リスキリング教育の具体策について議論が白熱した。"
+            }
+        ];
+
+        // --- UI: Render Gallery (New Card Design) ---
+        const cardContainer = document.getElementById('card-container');
+
+        function renderGallery() {
+            // 修正: href="${item.filename}" として、データ内のファイル名をリンク先に設定するようにしました。
+            cardContainer.innerHTML = pdfData.map(item => `
+                <a href="${item.filename}" target="_blank" rel="noopener noreferrer" class="academic-card p-6 cursor-pointer group flex flex-col h-full block hover:no-underline">
+                    
+                    <!-- Element A: Genre Tags -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${item.tags.map(tag => `
+                            <span class="bg-gray-100 text-gray-700 text-xs font-bold px-3 py-1 rounded-full border border-gray-200">
+                                ${tag}
+                            </span>
+                        `).join('')}
+                    </div>
+
+                    <!-- Element B: Title -->
+                    <h3 class="text-2xl font-bold text-[#003366] mb-5 leading-snug font-serif group-hover:text-blue-800 transition-colors">
+                        ${item.title}
+                    </h3>
+
+                    <div class="flex-grow space-y-4">
+                        <!-- Element C: Perspective Section -->
+                        <div class="bg-blue-50/50 border border-dashed border-blue-200 rounded-md p-4">
+                            <h4 class="text-xs font-bold text-gray-500 mb-2 flex items-center">
+                                <i class="fa-regular fa-user mr-2 text-gray-400"></i>
+                                担当者の視点
+                            </h4>
+                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+                                ${item.perspective}
+                            </p>
+                        </div>
+
+                        <!-- Element D: Discussion Section -->
+                        <div class="bg-blue-50/50 border border-dashed border-blue-200 rounded-md p-4">
+                            <h4 class="text-xs font-bold text-gray-500 mb-2 flex items-center">
+                                <i class="fa-solid fa-users mr-2 text-gray-400"></i>
+                                議論の論点
+                            </h4>
+                            <p class="text-sm text-gray-700 leading-relaxed text-justify">
+                                ${item.discussion}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Element E: Footer -->
+                    <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
+                        <div class="font-serif">
+                            ${item.date}
+                        </div>
+                        <div class="flex items-center font-medium">
+                            <i class="fa-solid fa-pen-nib mr-2 text-gray-400"></i>
+                            ${item.author_attr}
+                        </div>
+                    </div>
+
+                </a>
+            `).join('');
+        }
+
+        // --- NAVIGATION & VIEWER LOGIC (Kept same) ---
+        const galleryView = document.getElementById('gallery-view');
+        const pdfView = document.getElementById('pdf-view');
+        const viewerControls = document.getElementById('viewer-controls');
+        const promptTitle = document.getElementById('prompt-title');
+        const currentDocTitle = document.getElementById('current-doc-title');
+
+        function openPdfViewer(title) {
+            galleryView.classList.add('hidden');
+            pdfView.classList.remove('hidden');
+            viewerControls.classList.remove('hidden');
+            
+            resetViewer();
+            promptTitle.textContent = title;
+            currentDocTitle.textContent = title;
+        }
+
+        function showGallery() {
+            galleryView.classList.remove('hidden');
+            pdfView.classList.add('hidden');
+            viewerControls.classList.add('hidden');
+            resetViewer();
+        }
+
+        // --- PDF.js Implementation ---
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let scale = 1.0;
+        let canvas = document.getElementById('the-canvas');
+        let ctx = canvas.getContext('2d');
+
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const viewerContainer = document.getElementById('viewer-container');
+        const loading = document.getElementById('loading');
+        const errorMsg = document.getElementById('error-message');
+
+        function resetViewer() {
+            pdfDoc = null;
+            pageNum = 1;
+            scale = 1.0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.classList.add('hidden');
+            uploadPrompt.classList.remove('hidden');
+            viewerContainer.classList.add('hidden');
+        }
+
+        function renderPage(num) {
+            pageRendering = true;
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({scale: scale});
+                const outputScale = window.devicePixelRatio || 1;
+
+                canvas.width = Math.floor(viewport.width * outputScale);
+                canvas.height = Math.floor(viewport.height * outputScale);
+                canvas.style.width = Math.floor(viewport.width) + "px";
+                canvas.style.height = Math.floor(viewport.height) + "px";
+
+                const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    transform: transform,
+                    viewport: viewport
+                };
+                
+                page.render(renderContext).promise.then(function() {
+                    pageRendering = false;
+                    canvas.classList.remove('hidden');
+                    document.getElementById('page-num').value = num;
+                    document.getElementById('zoom-level').textContent = Math.round(scale * 100) + '%';
+                    
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                    
+                    document.getElementById('prev').disabled = num <= 1;
+                    document.getElementById('next').disabled = num >= pdfDoc.numPages;
+                    document.getElementById('prev').style.opacity = num <= 1 ? "0.3" : "1";
+                    document.getElementById('next').style.opacity = num >= pdfDoc.numPages ? "0.3" : "1";
+                });
+            });
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        function onZoomIn() {
+            if (scale >= 3.0) return;
+            scale += 0.25;
+            queueRenderPage(pageNum);
+        }
+
+        function onZoomOut() {
+            if (scale <= 0.5) return;
+            scale -= 0.25;
+            queueRenderPage(pageNum);
+        }
+
+        function loadPDF(fileData) {
+            loading.classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+
+            pdfjsLib.getDocument(fileData).promise.then(function(pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                document.getElementById('page-count').textContent = pdfDoc.numPages;
+                pageNum = 1;
+                scale = 1.0;
+                
+                uploadPrompt.classList.add('hidden');
+                viewerContainer.classList.remove('hidden');
+                loading.classList.add('hidden');
+                renderPage(pageNum);
+            }).catch(function(reason) {
+                console.error(reason);
+                loading.classList.add('hidden');
+                document.getElementById('error-text').textContent = "ファイル形式が無効か破損しています。";
+                errorMsg.classList.remove('hidden');
+            });
+        }
+
+        document.getElementById('prev').addEventListener('click', onPrevPage);
+        document.getElementById('next').addEventListener('click', onNextPage);
+        document.getElementById('zoom-in').addEventListener('click', onZoomIn);
+        document.getElementById('zoom-out').addEventListener('click', onZoomOut);
+        
+        document.getElementById('page-num').addEventListener('change', function() {
+            const num = parseInt(this.value);
+            if (num >= 1 && num <= pdfDoc.numPages) {
+                pageNum = num;
+                queueRenderPage(pageNum);
+            }
+        });
+
+        const fileInput = document.getElementById('file-upload');
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type === "application/pdf") {
+                const reader = new FileReader();
+                reader.onload = (ev) => loadPDF(new Uint8Array(ev.target.result));
+                reader.readAsArrayBuffer(file);
+            }
+        });
+
+        const dropZone = document.getElementById('drop-zone');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        document.body.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0 && files[0].type === "application/pdf") {
+                 if (!galleryView.classList.contains('hidden')) {
+                    openPdfViewer(files[0].name);
+                }
+                const reader = new FileReader();
+                reader.onload = (ev) => loadPDF(new Uint8Array(ev.target.result));
+                reader.readAsArrayBuffer(files[0]);
+            }
+        }, false);
+
+        document.addEventListener('keydown', (e) => {
+            if (galleryView.classList.contains('hidden') && pdfDoc) {
+                if (e.key === 'ArrowLeft') onPrevPage();
+                if (e.key === 'ArrowRight') onNextPage();
+            }
+        });
+
+        renderGallery();
+
+    </script>
+</body>
+</html>
