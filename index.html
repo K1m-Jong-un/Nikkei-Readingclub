@@ -24,7 +24,6 @@
     <meta property="og:description" content="長岡大学「日本経済新聞を読む会」の公式サイトです。新聞から知識と意見をつくる活動をしています。">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://k1m-jong-un.github.io/Nikkei-Readingclub/">
-    <!-- 必要に応じてOGP画像(og:image)を設定するとSNSでの見栄えが良くなります -->
 
     <!-- 構造化データ (JSON-LD) -->
     <script type="application/ld+json">
@@ -51,7 +50,7 @@
     }
     </script>
     
-    <!-- Google Fonts: Noto Sans JP (本文用) & Noto Serif JP (見出し用・新聞風) -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet">
@@ -62,7 +61,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- GSAP (Core + ScrollTrigger) -->
+    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
@@ -73,11 +72,11 @@
                 extend: {
                     colors: {
                         nikkei: {
-                            main: '#004F8A', // 日経風ネイビー
+                            main: '#004F8A',
                             dark: '#003366',
                             light: '#E6EEF5',
-                            accent: '#C41230', // 日経ロゴの赤
-                            bg: '#F8FAFC',     // 薄い青みがかったグレー背景
+                            accent: '#C41230',
+                            bg: '#F8FAFC',
                         }
                     },
                     fontFamily: {
@@ -99,7 +98,6 @@
     </script>
 
     <style>
-        /* カスタムスタイル */
         body {
             font-family: 'Noto Sans JP', sans-serif;
             color: #333;
@@ -107,12 +105,10 @@
             background-color: #F8FAFC;
         }
         
-        /* 見出し等は明朝体で新聞らしさを演出 */
         h1, h2, h3, .serif-font {
             font-family: 'Noto Serif JP', serif;
         }
         
-        /* スクロールアニメーション用クラス */
         .fade-in-up {
             opacity: 0;
             transform: translateY(30px);
@@ -123,7 +119,6 @@
             transform: translateY(0);
         }
 
-        /* 記事カードのホバーエフェクト強化 */
         .article-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -132,7 +127,6 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
 
-        /* プレースホルダー（文章を入れる場所）のスタイル */
         .content-placeholder {
             background-color: #f1f5f9;
             border: 2px dashed #cbd5e1;
@@ -143,7 +137,6 @@
             font-size: 0.875rem;
         }
 
-        /* 詳細タグ（summary）のマーカー非表示 */
         details > summary {
             list-style: none;
         }
@@ -151,14 +144,13 @@
             display: none;
         }
 
-        /* ローディング画面スタイル */
         #loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #004F8A; /* 変更: 日経ネイビー */
+            background-color: #004F8A;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -167,21 +159,19 @@
         }
         .loader-text {
             font-family: 'Noto Serif JP', serif;
-            /* 修正: 文字サイズを大きく調整 (レスポンシブ対応 clamp関数使用) */
-            /* 最小 1.8rem, 推奨 5vw, 最大 3.5rem */
             font-size: clamp(1.8rem, 5vw, 3.5rem);
             font-weight: 700;
-            color: #ffffff; /* 変更: 白文字 */
-            margin-bottom: 1.5rem; /* サイズアップに伴い余白も調整 */
-            opacity: 0; /* GSAPで制御 */
-            transform: translateY(20px); /* GSAPで制御 */
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
             text-align: center;
             padding: 0 20px;
         }
         .loader-progress-bar {
-            width: 240px; /* バーの長さも少し長く */
-            height: 3px;  /* バーも少し太く */
-            background-color: #ffffff; /* 変更: 白ベース */
+            width: 240px;
+            height: 3px;
+            background-color: #ffffff;
             position: relative;
             overflow: hidden;
             border-radius: 2px;
@@ -191,13 +181,12 @@
             top: 0;
             left: 0;
             height: 100%;
-            width: 0%; /* GSAPで制御 */
-            background-color: #C41230; /* 変更: 赤（アクセントカラー） */
+            width: 0%;
+            background-color: #C41230;
         }
 
-        /* ヒーローセクションのアニメーション初期状態制御 */
         .hero-title, .hero-element {
-            opacity: 0; /* GSAPで表示させるまで隠す */
+            opacity: 0;
         }
     </style>
 </head>
@@ -217,7 +206,6 @@
             <!-- サークルロゴ -->
             <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/" class="text-xl md:text-2xl font-bold text-nikkei-main tracking-tight serif-font flex items-center gap-3 hover:opacity-80 transition">
                 <div class="bg-nikkei-main text-white p-1.5 rounded">
-                    <!-- SVGアイコン: 新聞紙（見開き） -->
                     <svg class="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
                         <path d="M18 14h-8"/>
@@ -229,11 +217,13 @@
             </a>
             
             <!-- デスクトップナビゲーション -->
-            <nav class="hidden md:flex space-x-8 font-medium text-gray-600 text-sm tracking-wide">
+            <nav class="hidden md:flex space-x-6 font-medium text-gray-600 text-sm tracking-wide">
                 <a href="#about" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">About</a>
                 <a href="#activity" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Activity</a>
+                <!-- メニューにScheduleを追加 -->
+                <a href="#schedule" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Schedule</a>
                 <a href="#records" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Records</a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXeW5xpTnI3EmI8aeh-C3lHifHWY_KVXxIfTa10atTR7g8zQ/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="bg-nikkei-main text-white px-4 py-2 rounded-md hover:bg-nikkei-dark transition duration-300 shadow-sm">Join Us</a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXeW5xpTnI3EmI8aeh-C3lHifHWY_KVXxIfTa10atTR7g8zQ/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="bg-nikkei-main text-white px-4 py-2 rounded-md hover:bg-nikkei-dark transition duration-300 shadow-sm ml-2">Join Us</a>
             </nav>
 
             <!-- モバイルメニューボタン -->
@@ -242,7 +232,7 @@
             </button>
         </div>
 
-        <!-- モバイルメニュー（非表示） -->
+        <!-- モバイルメニュー -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full top-full left-0 shadow-xl overflow-hidden transition-all duration-300">
             <nav class="flex flex-col p-4 space-y-2 text-gray-700 font-medium">
                 <a href="#about" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
@@ -250,6 +240,10 @@
                 </a>
                 <a href="#activity" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
                     <i data-lucide="activity" class="w-5 h-5"></i> Activity
+                </a>
+                <!-- メニューにScheduleを追加 -->
+                <a href="#schedule" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
+                    <i data-lucide="calendar" class="w-5 h-5"></i> Schedule
                 </a>
                 <a href="#records" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
                     <i data-lucide="file-text" class="w-5 h-5"></i> Records
@@ -264,43 +258,30 @@
     <main class="flex-grow" id="canvas-container">
         <!-- ① メインビジュアル（ヒーローエリア） -->
         <section class="relative pt-32 pb-20 md:pt-48 md:pb-32 flex items-center justify-center overflow-hidden bg-white">
-            <!-- 背景装飾（新聞記事をイメージしたグリッド） -->
             <div class="absolute inset-0 w-full h-full opacity-[0.03] pointer-events-none bg-[radial-gradient(#004F8A_1px,transparent_1px)] [background-size:20px_20px]"></div>
-            
-            <!-- 装飾的な円 -->
             <div class="absolute top-1/4 right-[10%] w-64 h-64 bg-nikkei-light rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float"></div>
             <div class="absolute bottom-1/4 left-[10%] w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" style="animation-delay: 2s;"></div>
 
             <div class="container mx-auto px-6 relative z-10 text-center max-w-4xl">
-                <!-- クラス追加: hero-element -->
                 <span class="hero-element inline-flex items-center gap-2 py-1 px-4 mb-8 text-xs font-bold tracking-widest text-nikkei-main bg-nikkei-light rounded-full border border-blue-100 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-nikkei-accent animate-pulse"></span> EST. 2024
                 </span>
                 
-                <!-- クラス追加: hero-title -->
-                <!-- 修正: 
-                     1. text-2xl に変更してモバイルでのサイズ調整
-                     2. whitespace-nowrap を削除し、md:whitespace-nowrap に変更（PCは一行、スマホは改行許可）
-                -->
                 <h1 class="hero-title text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight md:whitespace-nowrap">
                     世界を読み解く、最初の一歩。
                     <span class="text-nikkei-main text-sm sm:text-xl md:text-2xl lg:text-3xl mt-6 block font-medium whitespace-normal">新聞から、自分の知識と意見をつくる。</span>
                 </h1>
                 
-                <!-- クラス追加: hero-element -->
-                <!-- SEO対策: ここに「長岡大学」というワードを自然に含める -->
                 <p class="hero-element text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
                     私たちは長岡大学にて、日本経済新聞を通じて社会の動きを知り、<br class="hidden md:inline">
                     学生同士で議論することで「多角的な視点」と「自己の意見」を<br class="hidden md:inline">醸成するサークルです。
                 </p>
                 
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <!-- クラス追加: hero-element (ボタン1) -->
                     <a href="#contact" class="hero-element group bg-nikkei-main text-white px-8 py-4 rounded-lg font-bold hover:bg-nikkei-dark transition duration-300 shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
                         見学・入会はこちら 
                         <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
                     </a>
-                    <!-- クラス追加: hero-element (ボタン2) -->
                     <a href="#about" class="hero-element bg-white text-gray-700 border border-gray-300 px-8 py-4 rounded-lg font-bold hover:bg-gray-50 transition duration-300 shadow-sm flex items-center justify-center gap-2">
                         サークルについて知る
                     </a>
@@ -318,7 +299,6 @@
                         次回の活動は１号館 ３階 LC3にて16:10より行います
                     </p>
                 </div>
-                <!-- 過去ニュースへのリンクを追加 -->
                 <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/past-news/past-news.html" class="text-xs text-blue-200 hover:text-white flex items-center gap-1 transition-colors border-b border-transparent hover:border-white pb-0.5">
                     過去のニュースはこちら <i data-lucide="chevron-right" class="w-3 h-3"></i>
                 </a>
@@ -328,7 +308,6 @@
         <!-- ② サークル紹介 (About) -->
         <section id="about" class="py-24 bg-white relative">
             <div class="container mx-auto px-6">
-                <!-- セクションヘッダー -->
                 <div class="text-center mb-20 fade-in-up">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 serif-font relative inline-block">
                         私たちについて
@@ -380,7 +359,6 @@
 
                     <!-- 雰囲気・メンバー -->
                     <div class="space-y-8 fade-in-up" style="transition-delay: 0.2s;">
-                        <!-- 雰囲気 -->
                         <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100">
                             <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-3">
                                 <i data-lucide="coffee" class="text-nikkei-main w-6 h-6"></i> サークルの雰囲気
@@ -396,7 +374,6 @@
                             </div>
                         </div>
 
-                        <!-- メンバー構成 -->
                         <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100">
                             <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-3">
                                 <i data-lucide="users" class="text-nikkei-main w-6 h-6"></i> メンバー構成
@@ -432,7 +409,7 @@
         </section>
 
         <!-- ③ 活動内容 (Activity) -->
-        <section id="activity" class="py-24 bg-nikkei-bg border-y border-gray-200">
+        <section id="activity" class="py-24 bg-nikkei-bg border-t border-gray-200">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-20 fade-in-up">
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 serif-font relative inline-block">
@@ -442,9 +419,7 @@
                     <p class="mt-6 text-gray-600">普段の活動は、シンプルな3ステップで行われます。</p>
                 </div>
 
-                <!-- ステップ表示 -->
                 <div class="grid md:grid-cols-3 gap-8 relative mb-20">
-                    <!-- 矢印 (デスクトップのみ) -->
                     <div class="hidden md:block absolute top-1/2 left-1/3 transform -translate-y-1/2 -translate-x-1/2 text-gray-300 z-0">
                         <i data-lucide="chevron-right" class="w-12 h-12 opacity-50"></i>
                     </div>
@@ -452,7 +427,6 @@
                         <i data-lucide="chevron-right" class="w-12 h-12 opacity-50"></i>
                     </div>
 
-                    <!-- STEP 1 -->
                     <div class="bg-white p-8 rounded-2xl shadow-lg relative z-10 fade-in-up text-center border-t-4 border-nikkei-main group hover:-translate-y-2 transition-transform duration-300">
                         <div class="w-14 h-14 bg-nikkei-main text-white rounded-2xl rotate-3 flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-lg shadow-blue-900/20 group-hover:rotate-6 transition-transform">1</div>
                         <h3 class="text-xl font-bold mb-3 text-gray-800">Pick Up</h3>
@@ -462,7 +436,6 @@
                         </p>
                     </div>
 
-                    <!-- STEP 2 -->
                     <div class="bg-white p-8 rounded-2xl shadow-lg relative z-10 fade-in-up text-center border-t-4 border-nikkei-main group hover:-translate-y-2 transition-transform duration-300" style="transition-delay: 0.1s;">
                         <div class="w-14 h-14 bg-nikkei-main text-white rounded-2xl -rotate-2 flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-lg shadow-blue-900/20 group-hover:-rotate-6 transition-transform">2</div>
                         <h3 class="text-xl font-bold mb-3 text-gray-800">Think</h3>
@@ -472,7 +445,6 @@
                         </p>
                     </div>
 
-                    <!-- STEP 3 -->
                     <div class="bg-white p-8 rounded-2xl shadow-lg relative z-10 fade-in-up text-center border-t-4 border-nikkei-main group hover:-translate-y-2 transition-transform duration-300" style="transition-delay: 0.2s;">
                         <div class="w-14 h-14 bg-nikkei-main text-white rounded-2xl rotate-2 flex items-center justify-center text-xl font-bold mx-auto mb-6 shadow-lg shadow-blue-900/20 group-hover:rotate-6 transition-transform">3</div>
                         <h3 class="text-xl font-bold mb-3 text-gray-800">Share & Discuss</h3>
@@ -483,16 +455,13 @@
                     </div>
                 </div>
 
-                <!-- その他の活動 & ツール (2カラムレイアウト) -->
                 <div class="grid lg:grid-cols-3 gap-8 fade-in-up">
-                    <!-- その他の活動 -->
                     <div class="lg:col-span-2 bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
                         <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                             <i data-lucide="plus-circle" class="text-nikkei-main"></i> その他の活動
                         </h3>
                         
                         <div class="grid md:grid-cols-2 gap-6">
-                            <!-- 活動1 -->
                             <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-nikkei-main/30 transition-colors">
                                 <div class="flex items-center gap-2 mb-2">
                                     <div class="bg-white p-1.5 rounded text-nikkei-main shadow-sm">
@@ -505,7 +474,6 @@
                                 </p>
                             </div>
 
-                            <!-- 活動2 -->
                             <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-nikkei-main/30 transition-colors">
                                 <div class="flex items-center gap-2 mb-2">
                                     <div class="bg-white p-1.5 rounded text-nikkei-main shadow-sm">
@@ -518,7 +486,6 @@
                                 </p>
                             </div>
 
-                            <!-- 活動3 -->
                             <div class="bg-gray-50 p-5 rounded-xl border border-gray-100 hover:border-nikkei-main/30 transition-colors md:col-span-2">
                                 <div class="flex items-center gap-2 mb-2">
                                     <div class="bg-white p-1.5 rounded text-nikkei-main shadow-sm">
@@ -533,7 +500,6 @@
                         </div>
                     </div>
 
-                    <!-- ツール・環境 -->
                     <div class="bg-nikkei-main text-white rounded-2xl p-8 shadow-lg flex flex-col justify-center">
                         <h3 class="text-lg font-bold mb-6 border-b border-white/20 pb-4">Tools & Environment</h3>
                         <div class="space-y-6">
@@ -561,8 +527,44 @@
             </div>
         </section>
 
+        <!-- ★追加部分: Schedule セクション -->
+        <section id="schedule" class="py-24 bg-white border-t border-gray-200">
+            <div class="container mx-auto px-6">
+                <!-- セクションヘッダー -->
+                <div class="text-center mb-16 fade-in-up">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 serif-font relative inline-block">
+                        今後の活動予定
+                        <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-nikkei-accent"></span>
+                    </h2>
+                    <p class="mt-6 text-gray-600 font-bold tracking-widest uppercase text-sm">Schedule</p>
+                </div>
+
+                <!-- カレンダー埋め込み（レスポンシブ・カードデザイン） -->
+                <div class="max-w-5xl mx-auto fade-in-up" style="transition-delay: 0.1s;">
+                    <div class="bg-white p-2 md:p-6 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 relative group">
+                        <!-- Tailwindのaspect比を使ってレスポンシブ化 -->
+                        <!-- スマホでは縦長(4:5)、タブレットでは少し横長(4:3)、PCでは横長(16:9) -->
+                        <div class="relative w-full aspect-[4/5] sm:aspect-[4/3] lg:aspect-[16/9] rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+                            <iframe 
+                                src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=Asia%2FTokyo&showPrint=0&showTitle=0&src=bmlra2Vpc2hpbmJ1bi55b211a2FpQGdtYWlsLmNvbQ&src=NDc0ZGUyNTVhOTM3NTYxY2UwNDgxOWUyMjlhMTY1OTY3Mjk1YWNkNDdhMDJmNzFlNjliMDQ0ZTU0NWUzMjJhN0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=amEuamFwYW5lc2UjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23039be5&color=%234285f4&color=%230b8043" 
+                                style="border: 0" 
+                                class="absolute top-0 left-0 w-full h-full" 
+                                frameborder="0" 
+                                scrolling="no">
+                            </iframe>
+                        </div>
+                    </div>
+                    <!-- 補足テキスト -->
+                    <p class="text-center text-xs md:text-sm text-gray-500 mt-6 flex items-center justify-center gap-1.5 opacity-80">
+                        <i data-lucide="info" class="w-4 h-4"></i>
+                        活動予定は変更になる場合があります。見学等をご希望の方はフォームよりご連絡ください。
+                    </p>
+                </div>
+            </div>
+        </section>
+
         <!-- ④ 活動記録・記事紹介 (Records) -->
-        <section id="records" class="py-24 bg-white">
+        <section id="records" class="py-24 bg-nikkei-bg border-t border-gray-200">
             <div class="container mx-auto px-6">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-12 fade-in-up">
                     <div>
@@ -573,7 +575,6 @@
                         <p class="mt-6 text-gray-600">過去に取り上げた記事と、そこから生まれた議論の一部を紹介します。</p>
                     </div>
                     
-                    <!-- PC用リンク: デザインを調整してPDFが見れることを明示 -->
                     <div class="hidden md:flex flex-col items-end mt-4 md:mt-0">
                         <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/archive/archive.html" class="flex items-center gap-2 text-nikkei-main font-bold group transition-all">
                             アーカイブ・レジュメ一覧へ
@@ -588,12 +589,10 @@
                     </div>
                 </div>
 
-                <!-- 記事カードグリッド -->
-               <div id="records-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-               </div>
+                <div id="records-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
                 
                 <div class="mt-12 text-center md:hidden">
-                    <!-- モバイル用ボタン: 情報を付加してリッチに -->
                     <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/archive/archive.html" class="group inline-flex flex-col items-center justify-center border border-nikkei-main text-nikkei-main px-10 py-4 rounded-xl hover:bg-nikkei-main hover:text-white transition duration-300 w-full sm:w-auto shadow-sm hover:shadow-md">
                         <span class="font-bold text-lg flex items-center gap-2">
                             記事・レジュメ一覧を見る 
@@ -609,13 +608,11 @@
 
         <!-- ⑤ お問い合わせ (Contact & Recruit) -->
         <section id="contact" class="py-24 bg-nikkei-dark text-white relative overflow-hidden">
-            <!-- 背景パターン -->
             <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #202020 25%, #202020 75%, #000 75%, #000); background-position: 0 0, 10px 10px; background-size: 20px 20px;"></div>
             
             <div class="container mx-auto px-6 relative z-10">
                 <div class="grid lg:grid-cols-2 gap-16 items-start">
                     
-                    <!-- 左側：募集情報 -->
                     <div class="fade-in-up">
                         <div class="inline-block px-3 py-1 bg-nikkei-accent text-xs font-bold rounded mb-4">RECRUIT</div>
                         <h2 class="text-3xl md:text-4xl font-bold mb-6 serif-font">Join Us</h2>
@@ -646,7 +643,6 @@
                             </ul>
                         </div>
 
-                        <!-- 修正: リンク先を変更し、target="_blank"を追加 -->
                         <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXeW5xpTnI3EmI8aeh-C3lHifHWY_KVXxIfTa10atTR7g8zQ/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="group block w-full bg-nikkei-accent hover:bg-red-700 text-white text-center font-bold py-5 rounded-lg shadow-xl transition-all transform hover:-translate-y-1 relative overflow-hidden">
                             <span class="relative z-10 flex items-center justify-center gap-2">
                                 参加申し込みフォームへ <i data-lucide="external-link" class="w-5 h-5"></i>
@@ -658,7 +654,6 @@
                         </p>
                     </div>
 
-                    <!-- 右側：FAQ -->
                     <div class="fade-in-up" style="transition-delay: 0.2s;">
                         <h2 class="text-2xl font-bold mb-8 serif-font flex items-center gap-3">
                             <i data-lucide="help-circle" class="text-gray-400"></i> よくある質問 (FAQ)
@@ -726,11 +721,9 @@
                     </a>
                     <p class="text-sm mb-6">私たちは、新聞を通じて社会を知り、議論を通じて自己意見と思考力を深める、長岡大学の文科系サークルです。</p>
                     <div class="flex justify-center md:justify-start gap-4">
-                        <!-- Twitter Icon Link -->
                         <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/sns.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-nikkei-main hover:text-white transition duration-300">
                             <i data-lucide="twitter" class="w-5 h-5"></i>
                         </a>
-                        <!-- Instagram Icon Link -->
                         <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/sns.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition duration-300">
                             <i data-lucide="instagram" class="w-5 h-5"></i>
                         </a>
@@ -744,7 +737,7 @@
                             <li><a href="#" class="hover:text-nikkei-main transition">Home</a></li>
                             <li><a href="#about" class="hover:text-nikkei-main transition">About</a></li>
                             <li><a href="#activity" class="hover:text-nikkei-main transition">Activity</a></li>
-                            <!-- funny を削除しました -->
+                            <li><a href="#schedule" class="hover:text-nikkei-main transition">Schedule</a></li>
                         </ul>
                     </div>
                     <div>
@@ -768,10 +761,8 @@
 
     <!-- JavaScript: 動作ロジック -->
     <script>
-        // Lucideアイコンの初期化
         lucide.createIcons();
 
-        // モバイルメニューの制御
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const header = document.getElementById('header');
@@ -779,12 +770,10 @@
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
             const icon = mobileMenu.classList.contains('hidden') ? 'menu' : 'x';
-            // アイコンの切り替え（再描画が必要なためinnerHTMLで簡易実装）
             mobileMenuBtn.innerHTML = `<i data-lucide="${icon}" class="w-6 h-6"></i>`;
             lucide.createIcons();
         });
 
-        // メニューリンクをクリックしたらメニューを閉じる
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu.classList.add('hidden');
@@ -793,20 +782,18 @@
             });
         });
 
-        // スクロール時のヘッダー制御（影をつけるなど）
         window.addEventListener('scroll', () => {
             if (window.scrollY > 10) {
                 header.classList.add('shadow-md');
-                header.classList.remove('py-4'); // 必要に応じてパディング調整
+                header.classList.remove('py-4');
             } else {
                 header.classList.remove('shadow-md');
             }
         });
 
-        // Intersection Observer によるスクロールアニメーション (既存機能の維持)
         const observerOptions = {
             root: null,
-            rootMargin: '0px 0px -50px 0px', // 少し手前で発火
+            rootMargin: '0px 0px -50px 0px',
             threshold: 0.1
         };
 
@@ -814,7 +801,7 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    observer.unobserve(entry.target); // 一度表示されたら監視を終了
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
@@ -823,7 +810,6 @@
             observer.observe(el);
         });
 
-        // スムーススクロール (Safari等への互換性強化版)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -832,7 +818,7 @@
                 
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
-                    const headerOffset = 80; // 固定ヘッダーの分だけずらす
+                    const headerOffset = 80;
                     const elementPosition = targetElement.getBoundingClientRect().top;
                     const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
@@ -844,49 +830,37 @@
             });
         });
 
-        // ----------------------------------------------------
-        // GSAP Animation: ローディング画面 & ヒーローセクション
-        // ----------------------------------------------------
         window.addEventListener('load', () => {
             const tl = gsap.timeline();
 
-            // 1. ローディングアニメーション
             tl.to('.loader-progress', {
                 width: '100%',
-                duration: 0.8, // 1.5 -> 0.8 に変更
+                duration: 0.8,
                 ease: 'power2.inOut'
             })
             .to('.loader-text', {
                 opacity: 1,
                 y: 0,
-                duration: 0.4, // 0.5 -> 0.4 に変更
+                duration: 0.4,
                 ease: 'power2.out'
-            }, "-=0.4") // -=0.5 -> -=0.4 に変更
+            }, "-=0.4")
             .to('#loader', {
                 yPercent: -100,
-                duration: 0.6, // 0.8 -> 0.6 に変更
+                duration: 0.6,
                 ease: 'power4.inOut'
             });
 
-            // 2. ヒーローセクション出現アニメーション
-            // タイトルが先行して出現
             tl.fromTo('.hero-title', 
                 { y: 50, opacity: 0 },
                 { y: 0, opacity: 1, duration: 1, ease: 'power3.out' }
             )
-            // その他の要素が追従 (staggerでずらして表示)
             .fromTo('.hero-element',
                 { y: 30, opacity: 0 },
                 { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power3.out' },
-                "-=0.5" // タイトルアニメーションの後半に被せて開始
+                "-=0.5"
             );
         });
 
-// ==========================================
-// 活動記録 ランダム表示スクリプト
-// ==========================================
-
-// 1. 記事データのリスト (ここに表示させたい内容を追加・編集してください)
 const recordsData = [
   {
     "id": 1,
@@ -970,36 +944,26 @@ const recordsData = [
   }
 ];
 
-// 2. 配列をシャッフルして上位3つを取得する関数
 function getRandomRecords(count) {
-    // データをコピーしてシャッフル（Fisher-Yates algorithm）
     const shuffled = [...recordsData];
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    // 指定された件数だけ返す
     return shuffled.slice(0, count);
 }
 
-// 3. HTMLを生成して表示する関数
 function renderRecords() {
     const container = document.getElementById('records-grid');
     if (!container) return;
 
-    // 表示したい件数（ここでは3件）
     const selectedRecords = getRandomRecords(3);
 
-    // HTMLを生成
     container.innerHTML = selectedRecords.map((record, index) => {
         
-        // --- 修正ポイント1: タグの色を自動決定するロジックを追加 ---
-        // データには色情報がないため、タグ名やランダムで色を割り当てます
         const tagsHtml = record.tags.map(tagName => {
-            // デフォルトの色（グレー）
             let colorClass = "text-gray-500 bg-gray-100";
             
-            // 特定のキーワードで色を変える（お好みで調整してください）
             if (tagName.includes("経済") || tagName.includes("ビジネス")) colorClass = "text-nikkei-main bg-nikkei-light";
             if (tagName.includes("政治") || tagName.includes("社会")) colorClass = "text-red-700 bg-red-50";
             if (tagName.includes("金融") || tagName.includes("IT")) colorClass = "text-green-700 bg-green-50";
@@ -1007,16 +971,11 @@ function renderRecords() {
             return `<span class="text-[10px] font-bold ${colorClass} px-2 py-1 rounded-full uppercase tracking-wide">${tagName}</span>`;
         }).join('');
 
-        // --- 修正ポイント2: カードの装飾色を決定 ---
-        // データに色がないため、デフォルト色を設定（ここでは日経ブルー）
         const barColor = "bg-nikkei-main";
         const hoverColor = "text-nikkei-main";
 
-        // アニメーションの遅延設定
         const delayStyle = `style="transition-delay: ${index * 0.1}s;"`;
 
-        // --- 修正ポイント3,4,5: 正しいデータ項目名（key）を使用 ---
-        // record.perspective, record.discussion, record.author_attr を使用
         return `
         <article class="article-card bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col fade-in-up group h-full" ${delayStyle}>
             <div class="h-2 ${barColor} w-full"></div>
@@ -1056,16 +1015,13 @@ function renderRecords() {
         `;
     }).join('');
 
-    // 4. 動的に追加された要素に対してアイコンとアニメーションを適用
     lucide.createIcons();
     
-    // アニメーション監視対象に追加
     document.querySelectorAll('#records-grid .fade-in-up').forEach(el => {
         observer.observe(el);
     });
 }
 
-// ページ読み込み時に実行
 document.addEventListener('DOMContentLoaded', renderRecords);
 
     </script>
