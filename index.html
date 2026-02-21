@@ -203,24 +203,27 @@
     <!-- ヘッダー -->
     <header class="fixed w-full z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100 transition-all duration-300" id="header">
         <div class="container mx-auto px-6 h-16 md:h-20 flex justify-between items-center">
-            <!-- サークルロゴ -->
-            <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/" class="text-xl md:text-2xl font-bold text-nikkei-main tracking-tight serif-font flex items-center gap-3 hover:opacity-80 transition">
-                <div class="bg-nikkei-main text-white p-1.5 rounded">
-                    <svg class="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
-                        <path d="M18 14h-8"/>
-                        <path d="M15 18h-5"/>
-                        <path d="M10 6h8v4h-8V6Z"/>
-                    </svg>
-                </div>
-                <span>日本経済新聞を読む会</span>
-            </a>
+            
+            <!-- サークルロゴ (SEO対策: h1タグでマークアップ) -->
+            <h1 class="m-0 flex items-center">
+                <a href="https://k1m-jong-un.github.io/Nikkei-Readingclub/" class="text-xl md:text-2xl font-bold text-nikkei-main tracking-tight serif-font flex items-center gap-3 hover:opacity-80 transition">
+                    <div class="bg-nikkei-main text-white p-1.5 rounded">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+                            <path d="M18 14h-8"/>
+                            <path d="M15 18h-5"/>
+                            <path d="M10 6h8v4h-8V6Z"/>
+                        </svg>
+                    </div>
+                    <span class="sr-only">長岡大学サークル</span>
+                    <span>日本経済新聞を読む会</span>
+                </a>
+            </h1>
             
             <!-- デスクトップナビゲーション -->
             <nav class="hidden md:flex space-x-6 font-medium text-gray-600 text-sm tracking-wide">
                 <a href="#about" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">About</a>
                 <a href="#activity" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Activity</a>
-                <!-- メニューにScheduleを追加 -->
                 <a href="#schedule" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Schedule</a>
                 <a href="#records" class="hover:text-nikkei-main hover:bg-nikkei-light px-3 py-2 rounded-md transition duration-300">Records</a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXeW5xpTnI3EmI8aeh-C3lHifHWY_KVXxIfTa10atTR7g8zQ/viewform?usp=dialog" target="_blank" rel="noopener noreferrer" class="bg-nikkei-main text-white px-4 py-2 rounded-md hover:bg-nikkei-dark transition duration-300 shadow-sm ml-2">Join Us</a>
@@ -241,7 +244,6 @@
                 <a href="#activity" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
                     <i data-lucide="activity" class="w-5 h-5"></i> Activity
                 </a>
-                <!-- メニューにScheduleを追加 -->
                 <a href="#schedule" class="hover:bg-nikkei-light hover:text-nikkei-main p-3 rounded-lg transition flex items-center gap-3">
                     <i data-lucide="calendar" class="w-5 h-5"></i> Schedule
                 </a>
@@ -267,10 +269,11 @@
                     <span class="w-2 h-2 rounded-full bg-nikkei-accent animate-pulse"></span> EST. 2024
                 </span>
                 
-                <h1 class="hero-title text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight md:whitespace-nowrap">
+                <!-- SEO対策: h1からh2に変更（デザインは維持） -->
+                <h2 class="hero-title text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight md:whitespace-nowrap">
                     世界を読み解く、最初の一歩。
                     <span class="text-nikkei-main text-sm sm:text-xl md:text-2xl lg:text-3xl mt-6 block font-medium whitespace-normal">新聞から、自分の知識と意見をつくる。</span>
-                </h1>
+                </h2>
                 
                 <p class="hero-element text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
                     私たちは長岡大学にて、日本経済新聞を通じて社会の動きを知り、<br class="hidden md:inline">
@@ -1027,4 +1030,3 @@ document.addEventListener('DOMContentLoaded', renderRecords);
     </script>
 </body>
 </html>
-
